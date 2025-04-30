@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stopwatch</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #display {
+      font-size: 3rem;
+      font-weight: bold;
+      background: white;
+      padding: 15px 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .buttons button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .buttons button:nth-child(1) { background-color: #10b981; }
+    .buttons button:nth-child(1):hover { background-color: #059669; }
+
+    .buttons button:nth-child(2) { background-color: #f59e0b; }
+    .buttons button:nth-child(2):hover { background-color: #d97706; }
+
+    .buttons button:nth-child(3) { background-color: #ef4444; }
+    .buttons button:nth-child(3):hover { background-color: #dc2626; }
+
+    .buttons button:nth-child(4) { background-color: #3b82f6; }
+    .buttons button:nth-child(4):hover { background-color: #2563eb; }
+
+    #laps {
+      margin-top: 25px;
+      width: 100%;
+      max-width: 320px;
+      list-style: none;
+      padding: 0;
+    }
+
+    #laps li {
+      background: #ffffffcc;
+      margin: 6px 0;
+      padding: 10px 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Stopwatch</h1>
+  <div id="display">00:00:00.000</div>
+  <div class="buttons">
+    <button onclick="startStopwatch()">Start</button>
+    <button onclick="pauseStopwatch()">Pause</button>
+    <button onclick="resetStopwatch()">Reset</button>
+    <button onclick="recordLap()">Lap</button>
+  </div>
+  <ul id="laps"></ul>
+
+  <script>
+    let startTime, elapsedTime = 0, interval;
+    const display = document.getElementById('display');
+    const laps = document.getElementById('laps');
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      const milliseconds = String(ms % 1000).padStart(3, '0');
+      return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+    }
+
+    function updateDisplay() {
+      const now = Date.now();
+      const diff = now - startTime + elapsedTime;
+      display.textContent = formatTime(diff);
+    }
+
+    function startStopwatch() {
+      if (!interval) {
+        startTime = Date.now();
+        interval = setInterval(updateDisplay, 10); // update every 10ms
+      }
+    }
+
+    function pauseStopwatch() {
+      if (interval) {
+        clearInterval(interval);
+        elapsedTime += Date.now() - startTime;
+        interval = null;
+      }
+    }
+
+    function resetStopwatch() {
+      clearInterval(interval);
+      interval = null;
+      elapsedTime = 0;
+      display.textContent = '00:00:00.000';
+      laps.innerHTML = '';
+    }
+
+    function recordLap() {
+      if (interval) {
+        const lapTime = display.textContent;
+        const li = document.createElement('li');
+        li.textContent = `Lap: ${lapTime}`;
+        laps.appendChild(li);
+      }
+    }
+  </script>
+</body>
+</html>
